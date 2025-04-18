@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <input type="text" id="textInput" placeholder="Enter text or URL" />
+        <br />
+        <button onclick="generateQRCode()">Generate QR Code</button>
+        <div id="qrCodeContainer"></div>
+    </div>
+
+    <script>
+        async function generateQRCode() {
+            const text = document.getElementById('textInput').value;
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            qrCodeContainer.innerHTML = ''; 
+
+            if (!text) {
+                alert('Please enter text or a URL');
+                return;
+            }
+
+           const apiUrl = "https://f3mvmr5ej27q563qd6lkife2em0ogntd.lambda-url.us-east-1.on.aws/";
+           // const apiUrl =  "https://3rkgq5zcufmzthpupbepof7w5u0kierd.lambda-url.us-east-1.on.aws/"
+          // const apiUrl = "https://ut3edysli0.execute-api.us-east-1.amazonaws.com/dev";
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                const result = await response.json();
+                console.log("Lambda raw result:", result);
+
+               
+
+                if (typeof result === "string" && result.startsWith("data:image/png;base64,")) {
+                    const qrCodeContainer = document.getElementById("qrCodeContainer");
+                    const qrImage = new Image();
+                    qrImage.src = result;
+                    qrCodeContainer.innerHTML = ""; 
+                    qrCodeContainer.appendChild(qrImage);
+                } else {
+                    alert("Failed to generate QR code.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error generating QR code.");
+            }
+        }
+    </script>
+</body>
+
+</html>
