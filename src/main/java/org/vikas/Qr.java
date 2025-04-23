@@ -22,12 +22,12 @@ public class Qr implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewa
 
         try {
             if (request.getBody() != null) {
-                // Assuming body is JSON like {"text": "..."}
+                
                 Map<String, String> bodyMap = new ObjectMapper().readValue(request.getBody(), Map.class);
                 text = bodyMap.getOrDefault("text", text);
             }
 
-            // Generate QR code...
+            
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 300, 300);
